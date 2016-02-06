@@ -6,31 +6,41 @@ import (
 	"math/big"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 func main() {
-	log.Println("Starting pi-go...")
 	r := mux.NewRouter().StrictSlash(true)
 	r.HandleFunc("/pigo/{digits:[0-9]+}", PigoHandler).Methods("GET")
 	http.Handle("/", r)
-	log.Printf("Server started and listening on port %d.", 3000)
-	log.Fatal(http.ListenAndServe(":3000", nil))
+	log.Printf("Server started and listening on port %d.", 3141)
+	log.Fatal(http.ListenAndServe(":3141", nil))
 }
 
 // PigoHandler handles requests
 func PigoHandler(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
 	vars := mux.Vars(r)
 	param := vars["digits"]
 	n, _ := strconv.Atoi(param)
+	pi := calculatePi(n)
+	w.Header().Set("Content-Type", "text/plain")
+	w.Write([]byte(pi.String()))
+	duration := time.Since(start)
+	log.Printf("\t%s\t%s",
+		r.RequestURI,
+		duration)
+	return
+}
+
+func calculatePi(n int) *big.Int {
 	digits := big.NewInt(int64(n))
 	unity := big.NewInt(0)
 	unity.Exp(big.NewInt(10), digits, nil)
 	pi := big.NewInt(0)
 	four := big.NewInt(4)
 	pi.Mul(four, pi.Sub(pi.Mul(four, arccot(5, unity)), arccot(239, unity)))
-	w.Header().Set("Content-Type", "text/plain")
-	w.Write([]byte(pi.String()))
-	return
+	return pi
 }
 
 // This is the same as the first Machin-based Pi
