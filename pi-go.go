@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/vgheri/pi-go/Godeps/_workspace/src/github.com/gorilla/mux"
+	"github.com/gorilla/mux"
 	"log"
 	"math/big"
 	"net/http"
