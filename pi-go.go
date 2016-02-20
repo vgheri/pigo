@@ -18,6 +18,7 @@ type PigoResult struct {
 func main() {
 	r := mux.NewRouter().StrictSlash(true)
 	r.HandleFunc("/pigo/{digits:[0-9]+}", PigoHandler).Methods("GET")
+	r.HandleFunc("/health", HealthHandler).Methods("GET")
 	http.Handle("/", r)
 	log.Printf("Server started and listening on port %d.", 3141)
 	log.Fatal(http.ListenAndServe(":3141", nil))
@@ -48,6 +49,12 @@ func PigoHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("\t%s\t%s",
 		r.RequestURI,
 		duration)
+	return
+}
+
+// HealthHandler handles health checks
+func HealthHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
 	return
 }
 

@@ -1,0 +1,12 @@
+{
+  "AWSEBDockerrunVersion": "1",
+  "Image": {
+    "Name": "valeriogheri/pigo",
+    "Update": "true"
+  },
+  "Ports": [
+    {
+      "ContainerPort": "3141"
+    }
+  ]
+}
