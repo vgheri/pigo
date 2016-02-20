@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"github.com/gorilla/mux"
 	"log"
 	"math/big"
@@ -8,6 +9,11 @@ import (
 	"strconv"
 	"time"
 )
+
+// PigoResult models the result for the pigo/{digits} route
+type PigoResult struct {
+	Digits *big.Int
+}
 
 func main() {
 	r := mux.NewRouter().StrictSlash(true)
@@ -20,12 +26,24 @@ func main() {
 // PigoHandler handles requests
 func PigoHandler(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
+	// Read route parameter
 	vars := mux.Vars(r)
 	param := vars["digits"]
 	n, _ := strconv.Atoi(param)
 	pi := calculatePi(n)
-	w.Header().Set("Content-Type", "text/plain")
-	w.Write([]byte(pi.String()))
+	// Create the result
+	result := &PigoResult{
+		Digits: pi,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	response, err := json.Marshal(result)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.Write(response)
 	duration := time.Since(start)
 	log.Printf("\t%s\t%s",
 		r.RequestURI,
